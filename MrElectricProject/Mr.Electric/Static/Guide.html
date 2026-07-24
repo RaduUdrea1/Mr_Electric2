@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guide</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #0099ff, #0033cc);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    p  { margin-bottom: 2rem; }
+    .btn {
+      border: none;
+      padding: 12px 24px;
+      margin: 8px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn-blue   { background: white; color: #0033cc; }
+    .btn-yellow { background: #ffcc00; color: #003366; }
+    .btn-outline { background: transparent; color: white; border: 2px solid white; }
+    .btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <h1>This is an interactive guide as to how to run the simulator!</h1>
+<p> First: You will need working Python 3 (Pycharm preferable, not required), and the additions Matplotlib, NumPy and SciPy</p>
+<p>Open a terminal in your project folder and using pip, install Matplotlib, NumPy and SciPy:</p>
+<p>1. Write pip install numpy scipy matplotlib</p>
+    <p>2. Open your simulator file in Python</p>
+    <p>3. Run using green play button, a prompt will appear, answer either 1, 2, 3, 4 and respond to subprompts.</p>
+    <p>4. A simulation screen will pop up and display your simulation, use the mouse to rotate and interact, you can zoom in or out.</p>
+    <p>5. Close the simulation and then you can rerun.
+
+</p>
+  <p>A brief Guide:</p>
+<p>1=One charge electric field (Try 1e-9 to test if it works)</p>
+  <p>2=Two charge electric field (Try 1e-9 and -1e-9 and 10)</p>
+  <p>3=Gaussian Sphere(Try 1e-9, 5 and then probe (1,0,0)_</p>
+  <p>4=Dirac Delta Cluster (remember still mostly cosmetic, try 1e-9)</p>
+  <p>A quick note: A charge of q=0 will lead to an error message, as will a distance of 0 on function 2</p>
+  <a href="Index.html" class="btn btn-blue">Back home!</a>
+<a href="Physics.html" class="btn btn-blue">Run Modes!</a>
+<a href="Gallery.html" class="btn btn-blue">Gallery!</a>
+</body>
+</html>

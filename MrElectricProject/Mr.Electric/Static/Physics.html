@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+  MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+  <meta charset="UTF-8">
+  <title>Run Modes</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #0099ff, #0033cc);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    p  { margin-bottom: 2rem; }
+    .btn {
+      border: none;
+      padding: 12px 24px;
+      margin: 8px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn-blue   { background: white; color: #0033cc; }
+    .btn-yellow { background: #ffcc00; color: #003366; }
+    .btn-outline { background: transparent; color: white; border: 2px solid white; }
+    .btn:hover { opacity: 0.85; }
+  </style>
+
+</head>
+
+<body>
+<h1>Welcome to the Physics page! Below are the navigation buttons</h1>
+<p>This is a representation of just a few electrostatic functions from Griffiths Electrodynamics. It contains fields from point charges and a schematic delta cluster.
+ This code was computed in Numpy, Scipy and Matplot.</p>
+<p>Below is the math behind each function:</p>
+<h3>Point charge (Coulomb)</h3>
+<p>
+  \[
+  \mathbf{E}(\mathbf{r}) = \frac{1}{4\pi\varepsilon_0}
+  \frac{q}{r^2}\hat{\mathbf{r}}
+  \]
+</p>
+<p>This function was used to compute the vector field at each location in a grid. There is a masking element so that the function doesn't compute at or very near the origin.
+It was also used to compute in the two charge field, the charges are in superposition, and so the vector field is simply the sum of the two charge functions. .</p>
+<h3>Gaussian sphere</h3>
+<p>
+  \[
+  \oint_S \mathbf{E}\cdot d\mathbf{a} = \frac{Q_{\mathrm{enc}}}{\varepsilon_0}
+  \]
+</p>
+<p>This function was used to compute the flux flowing through a gaussian sphere of radius r.</p>
+<h3>Dirac delta</h3>
+<p>
+  \[
+  \rho(\mathbf{r}) = q\,\delta^3(\mathbf{r}-\mathbf{r}')
+  \]
+</p>
+<p>This function is purely cosmetic, graphically a dirac delta function would just be an infinitely tall and narrow spike, the code just represents a cluster of points. </p>
+
+
+
+<a href="Index.html" class="btn btn-blue">Back home!</a>
+<a href="Guide.html" class="btn btn-blue">Guide!</a>
+<a href="Gallery.html" class="btn btn-blue">Gallery!</a>
+
+</body>
+</html>
