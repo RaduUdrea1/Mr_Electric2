@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Simulate!</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #0099ff, #0033cc);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    p  { margin-bottom: 2rem; }
+    .btn {
+      border: none;
+      padding: 12px 24px;
+      margin: 8px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn-blue   { background: white; color: #0033cc; }
+    .btn-yellow { background: #ffcc00; color: #003366; }
+    .btn-outline { background: transparent; color: white; border: 2px solid white; }
+    .btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+ <h1>Below are the option for simulation:</h1>
+<label for="run-modes">Choose a Run Mode:</label>
+<select name="Run Modes" id="run-modes">
+    <option value="One_Charge">One-Charge Field</option>
+    <option value="Two_Charge">Two-Charge Field</option>
+    <option value="One_chargeGauss">Gaussian Sphere and Probe</option>
+    <option value="Dirac_Delta">Dirac Delta Cluster</option>
+</select>
+
+
+
+
+<div id="inputs-one">
+    <label for="charge">Selected Charge:</label>
+    <input type = "number" id = "charge" name = "charge" placeholder = "10" required>
+</div>
+
+
+<div id="inputs-two" style="display:none">
+    <label for="charge1">Selected Charge:</label>
+    <input type = "number" id = "charge1" name = "charge" placeholder = "10" required>
+    <label for="charge2">Selected Second Charge:</label>
+    <input type = "number" id = "charge2" name = "charge" placeholder = "-10" required>
+    <label for="distance">Selected distance:</label>
+    <input type = "number" id = "distance" name = "charge" placeholder = "5" required>
+</div>
+
+
+<div id="inputs-three" style="display:none">
+    <label for="chargeG">Selected Charge:</label>
+    <input type="number" id="chargeG" name="charge" placeholder="10" required>
+    <label for="radius">Selected Radius of Gaussian Sphere:</label>
+    <input type="number" id="radius" name="radius" placeholder="5" required>
+    <label for="xcoordinate">X-Coordinate of Probe:</label>
+    <input type="number" id="xcoordinate" name="X-Coordinate" placeholder="1" required>
+    <label for="ycoordinate">Y-Coordinate of Probe:</label>
+    <input type="number" id="ycoordinate" name="Y-Coordinate" placeholder="1" required>
+    <label for="zcoordinate">z-Coordinate of Probe:</label>
+    <input type="number" id="zcoordinate" name="z-Coordinate" placeholder="1" required>
+</div>
+
+<div id="inputs-four" style="display:none">
+    <label for="chargeD">Selected Charge:</label>
+    <input type="number" id="chargeD" name="charge" placeholder="10" required>
+</div>
+
+
+ <button type="button" class = "btn btn-blue" id="simulate-btn">Simulate Charge!</button>
+    <div id = "display-plot">Results of Simulation:</div>
+
+ <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+
+    <script src="app.js"defer></script>
+<div id="plot" style="width: 90vw; height: 500px;"></div>
+
+<a href="Index.html" class="btn btn-blue">Back home</a>
+<a href="Guide.html" class="btn btn-blue">Guide</a>
+<a href="Gallery.html" class="btn btn-blue">Gallery</a>
+<a href="Physics.html" class="btn btn-blue">Physics</a>
+
+
+</body>
+</html>
