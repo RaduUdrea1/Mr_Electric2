@@ -2,61 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Guide</title>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(180deg, #0099ff, #0033cc);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    p  { margin-bottom: 2rem; }
-    .btn {
-      border: none;
-      padding: 12px 24px;
-      margin: 8px;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .btn-blue   { background: white; color: #0033cc; }
-    .btn-yellow { background: #ffcc00; color: #003366; }
-    .btn-outline { background: transparent; color: white; border: 2px solid white; }
-    .btn:hover { opacity: 0.85; }
-  </style>
+  <title>Mr.Electric-Guide</title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>This is an interactive guide as to how to run the simulator in PyCharm!</h1>
-<p> First: You will need working Python 3 (Pycharm preferable, not required), and the additions Matplotlib, NumPy and SciPy</p>
-<p>Open a terminal in your project folder and using pip, install Matplotlib, NumPy and SciPy:</p>
-<p>1. Write pip install numpy scipy matplotlib</p>
-    <p>2. Open your simulator file in Python</p>
-    <p>3. Run using green play button, a prompt will appear, answer either 1, 2, 3, 4 and respond to subprompts.</p>
-    <p>4. A simulation screen will pop up and display your simulation, use the mouse to rotate and interact, you can zoom in or out.</p>
-    <p>5. Close the simulation and then you can rerun.
+<header>
+  <p class="brand">Mr. Electric!</p>
+  <p class="tagline">Griffiths chapter 2 visualizer</p>
 
-        <h2> This is an interactive guide as to how run the simulator in the Simulate webpage!</h2>
-  <p>First: Select a run mode from the dropdown menu</p>
-      <p>Second: Input all necessary inputs</p>
-  <p>Third: Click simulate!</p>
+</header>
+  <h1>This is a guide to running the web simulator:</h1>
+<p>Navigate to the simulate page, and select a mode from the dropdown menu.</p>
+<p>Once selected, input the suggested inputs, some modes will ask for one or two charges, some for distances. Input all necessary values.</p>
+<p>Wait for pyodide to load, bottom output should read "Ready-click simulate", when this occurs, click simulate.</p>
+<p>Scroll around the plot with your mouse, and take a look at the output information.</p>
 
-</p>
-  <p>A brief Guide:</p>
-<p>1=One charge electric field (Try 1e-9 to test if it works)</p>
-  <p>2=Two charge electric field (Try 1e-9 and -1e-9 and 10)</p>
-  <p>3=Gaussian Sphere(Try 1e-9, 5 and then probe (1,0,0)_</p>
-  <p>4=Dirac Delta Cluster (remember still mostly cosmetic, try 1e-9)</p>
-  <p>A quick note: A charge of q=0 will lead to an error message, as will a distance of 0 on function 2</p>
-  <a href="Index.html" class="btn btn-blue">Back home</a>
-<a href="Physics.html" class="btn btn-blue">Physics</a>
-<a href="Gallery.html" class="btn btn-blue">Gallery</a>
-<a href="Simulate.html" class="btn btn-blue">Simulate</a>
+<h2> This is a guide to running the python file:</h2>
+<p>For those who want the experience as seen in the gallery, download the file off of Github. You will need to download matplotlib, numpy and scipy.</p>
+<p>When all are loaded, open any python agent, and run Physics.py.</p>
+<p>Select a mode, input the information, and click enter, and you will have a plot!</p>
+
+<h3>Notes for both run modes:</h3>
+<p>A charge of zero will give an error, as will any radius of zero for the gaussian sphere, pick wisely!</p>
+<p>Suggested Values: Before typing anything into the inputs, you will see suggested values, try these!</p>
+  <a href="Index.html" class="btn btn-blue">Home</a>
+  <a href="Physics.html" class="btn btn-blue">Physics</a>
+  <a href="Guide.html" class="btn btn-blue">*Guide*</a>
+  <a href="Gallery.html" class="btn btn-blue">Gallery</a>
+  <a href="Simulate.html" class="btn btn-blue">Simulate</a>
 </body>
 </html>

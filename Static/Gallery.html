@@ -2,42 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Gallery</title>
-     <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(180deg, #0099ff, #0033cc);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    p  { margin-bottom: 2rem; }
-    .btn {
-      border: none;
-      padding: 12px 24px;
-      margin: 8px;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .btn-blue   { background: white; color: #0033cc; }
-    .btn-yellow { background: #ffcc00; color: #003366; }
-    .btn-outline { background: transparent; color: white; border: 2px solid white; }
-    .btn:hover { opacity: 0.85; }
-  </style>
+    <title>Mr. Electric-Gallery</title>
+
+     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Gallery</h1>
-<a href="Physics.html" class="btn btn-blue"> Physics</a>
-  <a href="Guide.html" class="btn btn-blue"> Guide </a>
-  <a href="Index.html" class="btn btn-blue">Back Home</a>
-  <a href="Simulate.html" class="btn btn-blue">Simulate</a>
+<header>
+  <p class="brand">Mr. Electric!</p>
+  <p class="tagline">Griffiths chapter 2 visualizer</p>
+
+</header>
 <h2>Screenshots from the Python Simulator:</h2>
 
 <img src="1ChargeFunction.png" alt="One Charge Field" width="500">
@@ -48,6 +22,11 @@
 <p>A gaussian sphere of charge (q=10) radius (5) and probe at (1,0,0)</p>
 <img src="DiracDelta.png" alt="Delta Cluster" width="500">
 <p>A delta cluster at charge (q=10). Here, remember this is cosmetic to represent dirac delta, graphically it is just an infinitely tall spike from the middle</p>
+<a href="Index.html" class="btn btn-blue">Home</a>
+  <a href="Physics.html" class="btn btn-blue">Physics</a>
+  <a href="Guide.html" class="btn btn-blue">Guide</a>
+  <a href="Gallery.html" class="btn btn-blue">*Gallery*</a>
+  <a href="Simulate.html" class="btn btn-blue">Simulate</a>
 </body>
 
 

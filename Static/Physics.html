@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Mr. Electric-Physics</title>
+
   <script>
   MathJax = {
     tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
@@ -11,39 +13,16 @@
 </script>
   <meta charset="UTF-8">
   <title>Run Modes</title>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(180deg, #0099ff, #0033cc);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    p  { margin-bottom: 2rem; }
-    .btn {
-      border: none;
-      padding: 12px 24px;
-      margin: 8px;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .btn-blue   { background: white; color: #0033cc; }
-    .btn-yellow { background: #ffcc00; color: #003366; }
-    .btn-outline { background: transparent; color: white; border: 2px solid white; }
-    .btn:hover { opacity: 0.85; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
-<h1>Welcome to the Physics page! Below are the navigation buttons</h1>
+<header>
+  <p class="brand">Mr. Electric!</p>
+  <p class="tagline">Griffiths chapter 2 visualizer</p>
+
+</header>
 <p>This is a representation of just a few electrostatic functions from Griffiths Electrodynamics. It contains fields from point charges and a schematic delta cluster.
  This code was computed in Numpy, Scipy and Matplot.</p>
 <p>Below is the math behind each function:</p>
@@ -73,10 +52,11 @@ It was also used to compute in the two charge field, the charges are in superpos
 
 
 
-<a href="Index.html" class="btn btn-blue">Back home</a>
-<a href="Guide.html" class="btn btn-blue">Guide</a>
-<a href="Gallery.html" class="btn btn-blue">Gallery</a>
-<a href="Simulate.html" class="btn btn-blue">Simulate</a>
+<a href="Index.html" class="btn btn-blue">Home</a>
+  <a href="Physics.html" class="btn btn-blue">*Physics*</a>
+  <a href="Guide.html" class="btn btn-blue">Guide</a>
+  <a href="Gallery.html" class="btn btn-blue">Gallery</a>
+  <a href="Simulate.html" class="btn btn-blue">Simulate</a>
 
 </body>
 </html>

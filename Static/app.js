@@ -8,7 +8,7 @@ async function setup(){
     await pyodide.loadPackage("numpy");
     const src=await(await fetch("Static.py")).text();
     await pyodide.runPythonAsync(src);
-    display.textContent="ready-Click Simulate";
+    display.textContent="Ready-click simulate";
     btn.disabled=false;
     btn.addEventListener("click",runSimulation);
 }
@@ -47,7 +47,7 @@ async function runSimulation(){
     };
 
 
-    display.textContent=`OK|One Charge|q=${q}`;
+    display.textContent=`One charge field/Charge= ${q} Coulombs`;
     Plotly.newPlot("plot",[coneTrace],layout);
     }
 
@@ -83,7 +83,7 @@ async function runSimulation(){
     };
 
 
-    display.textContent=`OK|Two Charge|q1=${q1}| q2=${q2}|l=${l}`;
+    display.textContent=`Two Charge Field/ First charge= ${q1} Coulombs, Second Charge= ${q2} Coulombs, distance= ${l} Meters`;
     Plotly.newPlot("plot",[coneTrace],layout);
     }
     else if (mode=="One_chargeGauss"){
@@ -119,17 +119,32 @@ async function runSimulation(){
     };
 
     const sphereTrace={
+    mode:"markers",
+    marker:{size: 2, color:"cyan",opacity:0.35},
+    name:"Gaussian Sphere",
     type:"scatter3d",
-    x: data.Xs, y:data.Ys, z:data.Zs,
+    x: data.Xs, y:data.Ys, z:data.Zs
     }
 
     const probeTrace={
     type: "scatter3d",
-    x: [data.px], y: [data.py], z: [data.pz],
+    mode:"markers",
+    marker:{size: 8, color:"lime"},
+    name:"Probe",
+    x: [data.px], y: [data.py], z: [data.pz]
     }
 
-    display.textContent=`OK|One_chargeGauss|q=${q}| sr=${sr}|px=${px}|py=${py}|pz=${pz}|flux=${data.flux}|V=${data.V}|E=${data.Emag}`;
-    Plotly.newPlot("plot",[coneTrace, sphereTrace, probeTrace],layout);
+    const centerTrace={
+
+    type:"scatter3d",
+    mode:"markers",
+    marker:{size: 10,color:"red"},
+    name:"Charge",
+    x:[0],y:[0],z:[0]
+    }
+
+    display.textContent=`Charge= ${q} Coulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}), flux through sphere = ${data.flux} Newton-Meters Squared per Coulombs,voltage = ${data.V} Volts,electric field magnitude = ${data.Emag} Newtons per Coulomb`;
+    Plotly.newPlot("plot",[coneTrace, sphereTrace, probeTrace,centerTrace],layout);
     }
     else if(mode==="Dirac_Delta"){
     const q=Number(document.getElementById("chargeD").value);
@@ -158,7 +173,7 @@ async function runSimulation(){
     };
 
 
-    display.textContent=`OK|Dirac Delta|q=${q}|q_check=${data.q_check}|q=${q}|`;
+    display.textContent=`Dirac Delta Function/ Charge = ${q} Coulombs, ∫ρ dV ≈ ${data.q_check} C`;
     Plotly.newPlot("plot",[coneTrace],layout);
 
     }
