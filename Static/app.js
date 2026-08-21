@@ -12,6 +12,32 @@ async function setup(){
     btn.disabled=false;
     btn.addEventListener("click",runSimulation);
 }
+function plotCones(data,extraTraces){
+
+ const coneTrace={
+
+    type:"cone",
+    x: data.x, y: data.y, z: data.z,
+    u: data.u, v: data.v, w: data.w,
+    sizemode:"scaled",
+    sizeref:1,
+    anchor:"tail",}
+
+
+ const layout={
+    scene: {aspectmode:"cube"},
+    margin:{t:30}
+    };
+
+ const traces=[coneTrace];
+    if(extraTraces){
+    traces.push(...extraTraces);
+    }
+
+
+ Plotly.newPlot("plot",traces,layout);
+
+}
 
 async function runSimulation(){
     const display=document.getElementById("display-plot")
@@ -32,23 +58,11 @@ async function runSimulation(){
     display.textContent=data.message||"Failed";
     return;}
 
-    const coneTrace={
 
-    type:"cone",
-    x: data.x, y: data.y, z: data.z,
-    u: data.u, v: data.v, w: data.w,
-    sizemode:"scaled",
-    sizeref:1,
-    anchor:"tail",}
-
-    const layout={
-    scene: {aspectmode:"cube"},
-    margin:{t:30}
-    };
 
 
     display.textContent=`One charge field/Charge= ${q} Coulombs`;
-    Plotly.newPlot("plot",[coneTrace],layout);
+    plotCones(data);
     }
 
 
@@ -58,33 +72,29 @@ async function runSimulation(){
     const q1=Number(document.getElementById("charge1").value)
     const q2=Number(document.getElementById("charge2").value)
     const l=Number(document.getElementById("distance").value)
+
+    if (Number.isNaN(q1)||Number.isNaN(q2)){
+        display.textContent="Enter a Valid Charge";
+        return;
+    }
+    if (l<=0||Number.isNaN(l)){
+        display.textContent="Enter a Valid Length";
+        return;
+    }
     pyodide.globals.set("q1_js",q1);
     pyodide.globals.set("q2_js",q2);
     pyodide.globals.set("l_js",l)
     const result=await pyodide.runPythonAsync(`two_charge(float(q1_js),float(q2_js),float(l_js))`);
     const data=result.toJs({dict_converter:Object.fromEntries});
+
+
     if(!data.ok){
     display.textContent=data.message||"Failed";
     return;}
 
-    const coneTrace={
-
-    type:"cone",
-    x: data.x, y: data.y, z: data.z,
-    u: data.u, v: data.v, w: data.w,
-    sizemode:"scaled",
-    sizeref:1,
-    anchor:"tail",}
-
-
-    const layout={
-    scene: {aspectmode:"cube"},
-    margin:{t:30}
-    };
-
 
     display.textContent=`Two Charge Field/ First charge= ${q1} Coulombs, Second Charge= ${q2} Coulombs, distance= ${l} Meters`;
-    Plotly.newPlot("plot",[coneTrace],layout);
+    plotCones(data);
     }
     else if (mode=="One_chargeGauss"){
     const q=Number(document.getElementById("chargeG").value)
@@ -92,6 +102,15 @@ async function runSimulation(){
     const px=Number(document.getElementById("xcoordinate").value)
     const py=Number(document.getElementById("ycoordinate").value)
     const pz=Number(document.getElementById("zcoordinate").value)
+    if (Number.isNaN(q)){
+        display.textContent="Enter a Valid Charge";
+        return;}
+    if (Number.isNaN(sr)||sr<=0){
+        display.textContent="Enter a Valid Radius";
+        return;}
+    if(Number.isNaN(px)||Number.isNaN(py)||Number.isNaN(pz)){
+        display.textContent="Enter Valid Probe Points";
+        return;}
     pyodide.globals.set("q_js",q);
     pyodide.globals.set("sr_js",sr);
     pyodide.globals.set("px_js",px)
@@ -103,20 +122,9 @@ async function runSimulation(){
     display.textContent=data.message||"Failed";
     return;}
 
-    const coneTrace={
-
-    type:"cone",
-    x: data.x, y: data.y, z: data.z,
-    u: data.u, v: data.v, w: data.w,
-    sizemode:"scaled",
-    sizeref:1,
-    anchor:"tail",}
 
 
-    const layout={
-    scene: {aspectmode:"cube"},
-    margin:{t:30}
-    };
+
 
     const sphereTrace={
     mode:"markers",
@@ -144,7 +152,7 @@ async function runSimulation(){
     }
 
     display.textContent=`Charge= ${q} Coulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}), flux through sphere = ${data.flux} Newton-Meters Squared per Coulombs,voltage = ${data.V} Volts,electric field magnitude = ${data.Emag} Newtons per Coulomb`;
-    Plotly.newPlot("plot",[coneTrace, sphereTrace, probeTrace,centerTrace],layout);
+    plotCones(data,[sphereTrace,probeTrace,centerTrace]);
     }
     else if(mode==="Dirac_Delta"){
     const q=Number(document.getElementById("chargeD").value);
@@ -158,23 +166,9 @@ async function runSimulation(){
     display.textContent=data.message||"Failed";
     return;}
 
-    const coneTrace={
-
-    type:"cone",
-    x: data.x, y: data.y, z: data.z,
-    u: data.u, v: data.v, w: data.w,
-    sizemode:"scaled",
-    sizeref:1,
-    anchor:"tail",}
-
-    const layout={
-    scene: {aspectmode:"cube"},
-    margin:{t:30}
-    };
-
 
     display.textContent=`Dirac Delta Function/ Charge = ${q} Coulombs, ∫ρ dV ≈ ${data.q_check} C`;
-    Plotly.newPlot("plot",[coneTrace],layout);
+    plotCones(data);
 
     }
 
