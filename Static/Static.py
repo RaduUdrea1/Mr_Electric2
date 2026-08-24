@@ -1,25 +1,56 @@
 import numpy as np
 
+
 K=8.99e9
 e0=8.854187817e-12
-def one_charge(q, n=8, span=10, r_min=2.5, scale=2.0):
+def one_charge(q, px, py, pz, n=12, span=100, r_min=10, scale=2.0):
     x1d=np.linspace(-span,span,n)
     y1d=np.linspace(-span,span,n)
     z1d=np.linspace(-span,span,n)
     X,Y,Z=np.meshgrid(x1d,y1d,z1d)
     r=np.sqrt(X**2+Y**2+Z**2)
-    r_safe=np.maximum(r,1e-9)
+    r_safe = np.maximum(r, 1e-9)
+    q=q*1e-9
+    q_ref=1e-9
+    r_ref=5
+    E_ref=K*q_ref/(r_ref**2)
     Ex=K*q*X/r_safe**3
     Ey=K*q*Y/r_safe**3
     Ez=K*q*Z/r_safe**3
+
+    X0, Y0, Z0 = (0, 0, 0)
+    prx = px - X0
+    pry = py - Y0
+    prz = pz - Z0
+
+    pr = np.sqrt(prx ** 2 + pry ** 2 + prz ** 2)
+
+    if pr < 1e-9:
+        return {"ok": False, "message": "Your probe is at the charge point itself"}
+
+    pEx = K * q * prx / pr ** 3
+    pEy = K * q * pry / pr ** 3
+    pEz = K * q * prz / pr ** 3
 
     Emag=np.sqrt(Ex**2+Ey**2+Ez**2)
     if Emag.max()==0:
         return{"ok":False,"message":"Electric Field is zero"}
 
-    Explot=Ex/Emag.max()*scale
-    Eyplot=Ey/Emag.max()*scale
-    Ezplot=Ez/Emag.max()*scale
+
+
+    Explot=Ex/E_ref*scale
+    Eyplot=Ey/E_ref*scale
+    Ezplot=Ez/E_ref*scale
+    L = np.sqrt(Explot ** 2 + Eyplot ** 2 + Ezplot ** 2)
+    L_max = 1.0
+    too_long=L>L_max
+    factor=L_max/L[too_long]
+    too_long = L > L_max
+    Explot[too_long] *= factor
+    Eyplot[too_long] *= factor
+    Ezplot[too_long] *= factor
+
+    PEmag = np.sqrt(pEx ** 2 + pEy ** 2 + pEz ** 2)
 
     mask=r>=r_min
     return{
@@ -30,15 +61,24 @@ def one_charge(q, n=8, span=10, r_min=2.5, scale=2.0):
         "u":Explot[mask].tolist(),
         "v":Eyplot[mask].tolist(),
         "w":Ezplot[mask].tolist(),
+        "Ex": float(pEx),
+        "Ey": float(pEy),
+        "Ez": float(pEz),
+        "Emag":float(PEmag),
+        "px":float(px),
+        "py":float(py),
+        "pz":float(pz),
 
 
     }
 
-def two_charge(q1, q2, l, n=8, span=10, r_min=2.5, scale=2.0):
+def two_charge(q1, q2, px, py, pz, l, n=8, span=10, r_min=2.5, scale=2.0):
     x1d=np.linspace(-span,span,n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)
     X, Y, Z = np.meshgrid(x1d, y1d, z1d)
+    q1=q1*1e-9
+    q2=q2*1e-9
 
     x1,y1,z1=(-l/2,0,0)
     x2,y2,z2=(l/2,0,0)
@@ -48,6 +88,23 @@ def two_charge(q1, q2, l, n=8, span=10, r_min=2.5, scale=2.0):
     rz1 = Z - z1
     r1 = np.sqrt(rx1 ** 2 + ry1 ** 2 + rz1 ** 2)
     r1_safe = np.maximum(r1, 1e-9)
+
+    prx1=px-x1
+    pry1=py-y1
+    prz1=pz-z1
+
+    prx2=px-x2
+    pry2=py-y2
+    prz2=pz-z2
+
+    pr1=np.sqrt(prx1**2+pry1**2+prz1**2)
+    pr2=np.sqrt(prx2**2+pry2**2+prz2**2)
+
+
+
+
+    if pr1<1e-9 or pr2 <1e-9:
+        return{"ok":False,"message":"Probe is at charge point"}
 
     rx2 = X - x2
     ry2 = Y - y2
@@ -75,7 +132,20 @@ def two_charge(q1, q2, l, n=8, span=10, r_min=2.5, scale=2.0):
     Explot = Ex / Emag.max() * scale
     Eyplot = Ey / Emag.max() * scale
     Ezplot = Ez / Emag.max() * scale
+    pEx1 = K * q1 * prx1 / pr1 ** 3
+    pEy1 = K * q1 * pry1 / pr1 ** 3
+    pEz1 = K * q1 * prz1 / pr1 ** 3
 
+    pEx2=K*q2*prx2/pr2**3
+    pEy2=K*q2*pry2/pr2**3
+    pEz2=K*q2*prz2/pr2**3
+
+    pEx=pEx1+pEx2
+    pEy=pEy1+pEy2
+    pEz=pEz1+pEz2
+
+
+    PEmag=np.sqrt(pEx**2+pEy**2+pEz**2)
     mask = (r1 >= r_min) & (r2>=r_min)
     return {
         "ok": True,
@@ -85,9 +155,16 @@ def two_charge(q1, q2, l, n=8, span=10, r_min=2.5, scale=2.0):
         "u": Explot[mask].tolist(),
         "v": Eyplot[mask].tolist(),
         "w": Ezplot[mask].tolist(),
-
+        "Ex": float(pEx),
+        "Ey": float(pEy),
+        "Ez": float(pEz),
+        "Emag": float(PEmag),
+        "px": float(px),
+        "py": float(py),
+        "pz": float(pz),
     }
 def One_chargeGauss(q, sr, px,py,pz, n=8, span=10, r_min=2.5, scale=2.0, Cx=0.0, Cy=0.0, Cz=0.0):
+    q=q*1e-9
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)
@@ -157,6 +234,7 @@ def One_chargeGauss(q, sr, px,py,pz, n=8, span=10, r_min=2.5, scale=2.0, Cx=0.0,
 
     }
 def Dirac_Delta(q, n=12, span=2.0):
+    q=q*1e-9
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)

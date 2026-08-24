@@ -8,7 +8,7 @@ async function setup(){
     await pyodide.loadPackage("numpy");
     const src=await(await fetch("Static.py")).text();
     await pyodide.runPythonAsync(src);
-    display.textContent="Ready-click simulate";
+    display.textContent="Ready-run simulation!";
     btn.disabled=false;
     btn.addEventListener("click",runSimulation);
 }
@@ -19,8 +19,8 @@ function plotCones(data,extraTraces){
     type:"cone",
     x: data.x, y: data.y, z: data.z,
     u: data.u, v: data.v, w: data.w,
-    sizemode:"scaled",
-    sizeref:1,
+    sizemode:"absolute",
+    sizeref:0.5,
     anchor:"tail",}
 
 
@@ -47,22 +47,47 @@ async function runSimulation(){
 
 
     if (mode==="One_Charge"){
-     const q=Number(document.getElementById("charge").value);
+    const q=Number(document.getElementById("charge").value);
+    const px=Number(document.getElementById("xcoordinate1").value)
+    const py=Number(document.getElementById("ycoordinate1").value)
+    const pz=Number(document.getElementById("zcoordinate1").value)
     if (Number.isNaN(q)){
         display.textContent="Enter a Valid Charge";
         return;}
+    if(Number.isNaN(px)||Number.isNaN(py)||Number.isNaN(pz)){
+        display.textContent="Enter Valid Probe Points";
+        return;}
     pyodide.globals.set("q_js",q);
-    const result=await pyodide.runPythonAsync(`one_charge(float(q_js))`);
+    pyodide.globals.set("px_js",px);
+    pyodide.globals.set("py_js",py);
+    pyodide.globals.set("pz_js",pz);
+
+    const result=await pyodide.runPythonAsync(`one_charge(float(q_js),float(px_js),float(py_js),float(pz_js))`);
     const data=result.toJs({dict_converter:Object.fromEntries});
     if(!data.ok){
     display.textContent=data.message||"Failed";
     return;}
+ const probeTrace={
+    type: "scatter3d",
+    mode:"markers",
+    marker:{size: 8, color:"lime"},
+    name:"Probe",
+    x: [data.px], y: [data.py], z: [data.pz]
+    }
+
+    const centerTrace={
+
+    type:"scatter3d",
+    mode:"markers",
+    marker:{size: 10,color:"red"},
+    name:"Charge",
+    x:[0],y:[0],z:[0]
+    }
 
 
 
-
-    display.textContent=`One charge field/Charge= ${q} Coulombs`;
-    plotCones(data);
+    display.textContent=`One charge field/Charge= ${q} Coulombs, electric field magnitude=${data.Emag} Newtons per coulomb`;
+    plotCones(data, [probeTrace,centerTrace]);
     }
 
 
@@ -72,6 +97,9 @@ async function runSimulation(){
     const q1=Number(document.getElementById("charge1").value)
     const q2=Number(document.getElementById("charge2").value)
     const l=Number(document.getElementById("distance").value)
+    const px=Number(document.getElementById("xcoordinate2").value)
+    const py=Number(document.getElementById("ycoordinate2").value)
+    const pz=Number(document.getElementById("zcoordinate2").value)
 
     if (Number.isNaN(q1)||Number.isNaN(q2)){
         display.textContent="Enter a Valid Charge";
@@ -81,27 +109,56 @@ async function runSimulation(){
         display.textContent="Enter a Valid Length";
         return;
     }
+    if(Number.isNaN(px)||Number.isNaN(py)||Number.isNaN(pz)){
+        display.textContent="Enter Valid Probe Points";
+        return;}
     pyodide.globals.set("q1_js",q1);
     pyodide.globals.set("q2_js",q2);
-    pyodide.globals.set("l_js",l)
-    const result=await pyodide.runPythonAsync(`two_charge(float(q1_js),float(q2_js),float(l_js))`);
+    pyodide.globals.set("l_js",l);
+    pyodide.globals.set("px_js",px);
+    pyodide.globals.set("py_js",py);
+    pyodide.globals.set("pz_js",pz);
+    const result=await pyodide.runPythonAsync(`two_charge(float(q1_js),float(q2_js),float(px_js),float(py_js),float(pz_js), float(l_js))`);
     const data=result.toJs({dict_converter:Object.fromEntries});
 
 
     if(!data.ok){
     display.textContent=data.message||"Failed";
     return;}
+    const probeTrace={
+    type: "scatter3d",
+    mode:"markers",
+    marker:{size: 8, color:"lime"},
+    name:"Probe",
+    x: [data.px], y: [data.py], z: [data.pz]
+    }
+
+    const center1Trace={
+
+    type:"scatter3d",
+    mode:"markers",
+    marker:{size: 5,color:"red"},
+    name:"Charge",
+    x:[l/2],y:[0],z:[0]
+    }
+    const center2Trace={
+    type:"scatter3d",
+    mode:"markers",
+    marker:{size: 5,color:"red"},
+    name:"Charge",
+    x:[-l/2],y:[0],z:[0]
+    }
 
 
-    display.textContent=`Two Charge Field/ First charge= ${q1} Coulombs, Second Charge= ${q2} Coulombs, distance= ${l} Meters`;
-    plotCones(data);
+    display.textContent=`Two Charge Field/ First charge= ${q1} Coulombs, Second Charge= ${q2} Coulombs, distance= ${l} Meters, electric field magnitude=${data.Emag} Newtons per coulomb`;
+    plotCones(data,[probeTrace,center1Trace,center2Trace]);
     }
     else if (mode=="One_chargeGauss"){
     const q=Number(document.getElementById("chargeG").value)
     const sr=Number(document.getElementById("radius").value)
-    const px=Number(document.getElementById("xcoordinate").value)
-    const py=Number(document.getElementById("ycoordinate").value)
-    const pz=Number(document.getElementById("zcoordinate").value)
+    const px=Number(document.getElementById("xcoordinate3").value)
+    const py=Number(document.getElementById("ycoordinate3").value)
+    const pz=Number(document.getElementById("zcoordinate3").value)
     if (Number.isNaN(q)){
         display.textContent="Enter a Valid Charge";
         return;}
@@ -173,10 +230,7 @@ async function runSimulation(){
     }
 
 
-    else{
-    display.textContent="Coming Soon"+mode;
-
-    }}
+    }
 
 function updateInputs(){
     const mode=document.getElementById("run-modes").value;
