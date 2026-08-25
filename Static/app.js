@@ -13,6 +13,9 @@ async function setup(){
     btn.addEventListener("click",runSimulation);
 }
 function plotCones(data,extraTraces){
+const c = Array.from(data.c).map(Number);
+
+
 
  const coneTrace={
 
@@ -21,7 +24,22 @@ function plotCones(data,extraTraces){
     u: data.u, v: data.v, w: data.w,
     sizemode:"absolute",
     sizeref:0.5,
-    anchor:"tail",}
+    anchor:"tail",
+    color:data.c,
+    colorscale:"viridis",
+    cauto:false,
+    cmin:data.cmin,
+    cmax:data.cmax,
+    showscale:true,
+    colorbar:{
+        title:"E(N/C",
+        titleside:"right",
+        thickness:15,
+        len:0.7,
+    }
+
+    }
+
 
 
  const layout={
@@ -86,7 +104,7 @@ async function runSimulation(){
 
 
 
-    display.textContent=`One charge field/Charge= ${q} Coulombs, electric field magnitude=${data.Emag} Newtons per coulomb`;
+    display.textContent=`One charge field/Charge= ${q} nanocoulombs, electric field magnitude=${data.Emag} N/C`;
     plotCones(data, [probeTrace,centerTrace]);
     }
 
@@ -96,7 +114,9 @@ async function runSimulation(){
     else if (mode==="Two_Charge"){
     const q1=Number(document.getElementById("charge1").value)
     const q2=Number(document.getElementById("charge2").value)
-    const l=Number(document.getElementById("distance").value)
+    const l1=Number(document.getElementById("distance(x)").value)
+    const l2=Number(document.getElementById("distance(y)").value)
+    const l3=Number(document.getElementById("distance(z)").value)
     const px=Number(document.getElementById("xcoordinate2").value)
     const py=Number(document.getElementById("ycoordinate2").value)
     const pz=Number(document.getElementById("zcoordinate2").value)
@@ -105,7 +125,7 @@ async function runSimulation(){
         display.textContent="Enter a Valid Charge";
         return;
     }
-    if (l<=0||Number.isNaN(l)){
+    if (totalDist=0||Number.isNaN(l1)||Number.isNaN(l2)||Number.isNaN(l3)){
         display.textContent="Enter a Valid Length";
         return;
     }
@@ -114,11 +134,13 @@ async function runSimulation(){
         return;}
     pyodide.globals.set("q1_js",q1);
     pyodide.globals.set("q2_js",q2);
-    pyodide.globals.set("l_js",l);
+    pyodide.globals.set("l1_js",l1);
+    pyodide.globals.set("l2_js",l2);
+    pyodide.globals.set("l3_js",l3);
     pyodide.globals.set("px_js",px);
     pyodide.globals.set("py_js",py);
     pyodide.globals.set("pz_js",pz);
-    const result=await pyodide.runPythonAsync(`two_charge(float(q1_js),float(q2_js),float(px_js),float(py_js),float(pz_js), float(l_js))`);
+    const result=await pyodide.runPythonAsync(`two_charge(float(q1_js),float(q2_js),float(px_js),float(py_js),float(pz_js), float(l1_js),float(l2_js),float(l3_js))`);
     const data=result.toJs({dict_converter:Object.fromEntries});
 
 
@@ -139,18 +161,18 @@ async function runSimulation(){
     mode:"markers",
     marker:{size: 5,color:"red"},
     name:"Charge",
-    x:[l/2],y:[0],z:[0]
+    x:[-l1/2],y:[-l2/2],z:[-l3/2]
     }
     const center2Trace={
     type:"scatter3d",
     mode:"markers",
     marker:{size: 5,color:"red"},
     name:"Charge",
-    x:[-l/2],y:[0],z:[0]
+    x:[l1/2],y:[l2/2],z:[l3/2]
     }
 
 
-    display.textContent=`Two Charge Field/ First charge= ${q1} Coulombs, Second Charge= ${q2} Coulombs, distance= ${l} Meters, electric field magnitude=${data.Emag} Newtons per coulomb`;
+    display.textContent=`Two Charge Field/ First charge= ${q1} nanocoulombs, Second Charge= ${q2} nanocoulombs, distance= ${data.totalDist} meters, electric field magnitude=${data.Emag} N/C`;
     plotCones(data,[probeTrace,center1Trace,center2Trace]);
     }
     else if (mode=="One_chargeGauss"){
@@ -208,7 +230,7 @@ async function runSimulation(){
     x:[0],y:[0],z:[0]
     }
 
-    display.textContent=`Charge= ${q} Coulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}), flux through sphere = ${data.flux} Newton-Meters Squared per Coulombs,voltage = ${data.V} Volts,electric field magnitude = ${data.Emag} Newtons per Coulomb`;
+    display.textContent=`Charge= ${q} nanocoulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}), flux through sphere = ${data.flux} N*m^2/C,voltage = ${data.V} Volts,electric field magnitude = ${data.Emag} N/C`;
     plotCones(data,[sphereTrace,probeTrace,centerTrace]);
     }
     else if(mode==="Dirac_Delta"){
@@ -222,10 +244,18 @@ async function runSimulation(){
     if(!data.ok){
     display.textContent=data.message||"Failed";
     return;}
+    const centerTrace={
+
+    type:"scatter3d",
+    mode:"markers",
+    marker:{size: 10,color:"red"},
+    name:"Charge",
+    x:[0],y:[0],z:[0]
+    }
 
 
-    display.textContent=`Dirac Delta Function/ Charge = ${q} Coulombs, ∫ρ dV ≈ ${data.q_check} C`;
-    plotCones(data);
+    display.textContent=`Dirac Delta Function/ Charge = ${q} nanocoulombs, ∫ρ dV ≈ ${data.q_check} C`;
+    plotCones(data,[centerTrace]);
 
     }
 

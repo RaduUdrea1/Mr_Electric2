@@ -3,17 +3,33 @@ import numpy as np
 
 K=8.99e9
 e0=8.854187817e-12
-def one_charge(q, px, py, pz, n=12, span=100, r_min=10, scale=2.0):
+Q_ref=1e-9
+R_ref=5.0
+E_ref=K*Q_ref/(R_ref**2)
+
+def scale_and_clip(Ex,Ey,Ez,scale=2.0,L_max=3):
+    Explot=Ex/E_ref*scale
+    Eyplot=Ey/E_ref*scale
+    Ezplot=Ez/E_ref*scale
+
+    L=np.sqrt(Explot**2+Eyplot**2+Ezplot**2)
+    too_long=L>L_max
+
+    if np.any(too_long):
+        factor = L_max / L[too_long]
+        Explot[too_long] *= factor
+        Eyplot[too_long] *= factor
+        Ezplot[too_long] *= factor
+    return Explot, Eyplot, Ezplot
+
+def one_charge(q, px, py, pz, n=8, span=100, r_min=12, scale=2.0):
+    q = q * 1e-9
     x1d=np.linspace(-span,span,n)
     y1d=np.linspace(-span,span,n)
     z1d=np.linspace(-span,span,n)
     X,Y,Z=np.meshgrid(x1d,y1d,z1d)
     r=np.sqrt(X**2+Y**2+Z**2)
     r_safe = np.maximum(r, 1e-9)
-    q=q*1e-9
-    q_ref=1e-9
-    r_ref=5
-    E_ref=K*q_ref/(r_ref**2)
     Ex=K*q*X/r_safe**3
     Ey=K*q*Y/r_safe**3
     Ez=K*q*Z/r_safe**3
@@ -36,23 +52,11 @@ def one_charge(q, px, py, pz, n=12, span=100, r_min=10, scale=2.0):
     if Emag.max()==0:
         return{"ok":False,"message":"Electric Field is zero"}
 
-
-
-    Explot=Ex/E_ref*scale
-    Eyplot=Ey/E_ref*scale
-    Ezplot=Ez/E_ref*scale
-    L = np.sqrt(Explot ** 2 + Eyplot ** 2 + Ezplot ** 2)
-    L_max = 1.0
-    too_long=L>L_max
-    factor=L_max/L[too_long]
-    too_long = L > L_max
-    Explot[too_long] *= factor
-    Eyplot[too_long] *= factor
-    Ezplot[too_long] *= factor
-
     PEmag = np.sqrt(pEx ** 2 + pEy ** 2 + pEz ** 2)
-
+    Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
     mask=r>=r_min
+    c_vals = Emag[mask]
+
     return{
         "ok":True,
         "x":X[mask].tolist(),
@@ -68,11 +72,15 @@ def one_charge(q, px, py, pz, n=12, span=100, r_min=10, scale=2.0):
         "px":float(px),
         "py":float(py),
         "pz":float(pz),
+        "c": c_vals.tolist(),
+        "cmin": float(np.percentile(c_vals, 5)),
+        "cmax": float(np.percentile(c_vals, 95)),
+
 
 
     }
 
-def two_charge(q1, q2, px, py, pz, l, n=8, span=10, r_min=2.5, scale=2.0):
+def two_charge(q1, q2, px, py, pz, l1, l2, l3, n=8, span=100, r_min=12, scale=2.0):
     x1d=np.linspace(-span,span,n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)
@@ -80,8 +88,10 @@ def two_charge(q1, q2, px, py, pz, l, n=8, span=10, r_min=2.5, scale=2.0):
     q1=q1*1e-9
     q2=q2*1e-9
 
-    x1,y1,z1=(-l/2,0,0)
-    x2,y2,z2=(l/2,0,0)
+    x1,y1,z1=(-l1/2,-l2/2,-l3/2)
+    x2,y2,z2=(l1/2,l2/2,l3/2)
+
+    totalDist=np.sqrt(l1**2+l2**2+l3**2)
 
     rx1 = X - x1
     ry1 = Y - y1
@@ -129,9 +139,7 @@ def two_charge(q1, q2, px, py, pz, l, n=8, span=10, r_min=2.5, scale=2.0):
     if Emag.max() == 0:
         return {"ok": False, "message": "Electric Field is zero"}
 
-    Explot = Ex / Emag.max() * scale
-    Eyplot = Ey / Emag.max() * scale
-    Ezplot = Ez / Emag.max() * scale
+
     pEx1 = K * q1 * prx1 / pr1 ** 3
     pEy1 = K * q1 * pry1 / pr1 ** 3
     pEz1 = K * q1 * prz1 / pr1 ** 3
@@ -144,9 +152,10 @@ def two_charge(q1, q2, px, py, pz, l, n=8, span=10, r_min=2.5, scale=2.0):
     pEy=pEy1+pEy2
     pEz=pEz1+pEz2
 
-
+    Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
     PEmag=np.sqrt(pEx**2+pEy**2+pEz**2)
     mask = (r1 >= r_min) & (r2>=r_min)
+    c_vals = Emag[mask]
     return {
         "ok": True,
         "x": X[mask].tolist(),
@@ -162,8 +171,16 @@ def two_charge(q1, q2, px, py, pz, l, n=8, span=10, r_min=2.5, scale=2.0):
         "px": float(px),
         "py": float(py),
         "pz": float(pz),
+        "l1":float(l1),
+        "l2":float(l2),
+        "l3":float(l3),
+        "c": c_vals.tolist(),
+        "cmin": float(np.percentile(c_vals, 5)),
+        "cmax": float(np.percentile(c_vals, 95)),
+
+        "totalDist":float(totalDist),
     }
-def One_chargeGauss(q, sr, px,py,pz, n=8, span=10, r_min=2.5, scale=2.0, Cx=0.0, Cy=0.0, Cz=0.0):
+def One_chargeGauss(q, sr, px,py,pz, n=8, span=100, r_min=2.5, scale=12, Cx=0.0, Cy=0.0, Cz=0.0):
     q=q*1e-9
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)
@@ -182,9 +199,6 @@ def One_chargeGauss(q, sr, px,py,pz, n=8, span=10, r_min=2.5, scale=2.0, Cx=0.0,
     if sr <=0:
         return{"ok": False, "message": "Sr should be a positive number"}
 
-    Explot = Ex / Emag.max() * scale
-    Eyplot = Ey / Emag.max() * scale
-    Ezplot = Ez / Emag.max() * scale
     q_enc = q
     flux = q_enc / e0
     u=np.linspace(0,2*np.pi,48)
@@ -209,8 +223,9 @@ def One_chargeGauss(q, sr, px,py,pz, n=8, span=10, r_min=2.5, scale=2.0, Cx=0.0,
     pEz = K * q * prz / pr ** 3
     pV = K * (q / pr)
     PEmag = np.sqrt(pEx ** 2 + pEy ** 2 + pEz ** 2)
-
+    Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
     mask = r >= r_min
+    c_vals = Emag[mask]
     return {
         "ok": True,
         "x": X[mask].tolist(),
@@ -230,10 +245,13 @@ def One_chargeGauss(q, sr, px,py,pz, n=8, span=10, r_min=2.5, scale=2.0, Cx=0.0,
         "Zs":Zs.ravel().tolist(),
         "px":float (px),
         "py":float (py),
-        "pz": float (pz)
+        "pz": float (pz),
+        "c": c_vals.tolist(),
+        "cmin": float(np.percentile(c_vals, 5)),
+        "cmax": float(np.percentile(c_vals, 95)),
 
     }
-def Dirac_Delta(q, n=12, span=2.0):
+def Dirac_Delta(q, n=8, span=2):
     q=q*1e-9
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)
@@ -264,11 +282,9 @@ def Dirac_Delta(q, n=12, span=2.0):
     R=1.2
     r_inner=0.15
     ok=(r>=r_inner)&(r<=R)
-    scale = 0.8
-    Explot=Ex/Emag.max()*scale
-    Eyplot=Ey/Emag.max()*scale
-    Ezplot=Ez/Emag.max()*scale
 
+    Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
+    c_vals = Emag[ok]
 
     return{
         "ok": True,
@@ -279,5 +295,8 @@ def Dirac_Delta(q, n=12, span=2.0):
         "v": Eyplot[ok].tolist(),
         "w": Ezplot[ok].tolist(),
         "q_check": float(q_check),
+        "c": c_vals.tolist(),
+        "cmin": float(np.percentile(c_vals, 5)),
+        "cmax": float(np.percentile(c_vals, 95)),
     }
 
