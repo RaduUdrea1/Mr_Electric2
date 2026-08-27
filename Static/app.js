@@ -13,7 +13,7 @@ async function setup(){
     btn.addEventListener("click",runSimulation);
 }
 function plotCones(data,extraTraces){
-const c = Array.from(data.c).map(Number);
+
 
 
 
@@ -25,18 +25,11 @@ const c = Array.from(data.c).map(Number);
     sizemode:"absolute",
     sizeref:0.5,
     anchor:"tail",
-    color:data.c,
-    colorscale:"viridis",
-    cauto:false,
-    cmin:data.cmin,
-    cmax:data.cmax,
-    showscale:true,
-    colorbar:{
-        title:"E(N/C",
-        titleside:"right",
-        thickness:15,
-        len:0.7,
-    }
+    colorscale: [[0, "#0000FF"], [1, "#0000FF"]],
+    showscale: false,
+    hoverinfo: "skip",
+
+
 
     }
 
@@ -120,12 +113,12 @@ async function runSimulation(){
     const px=Number(document.getElementById("xcoordinate2").value)
     const py=Number(document.getElementById("ycoordinate2").value)
     const pz=Number(document.getElementById("zcoordinate2").value)
-
+    const totalDist=Math.sqrt(l1**2+l2**2+l3**2)
     if (Number.isNaN(q1)||Number.isNaN(q2)){
         display.textContent="Enter a Valid Charge";
         return;
     }
-    if (totalDist=0||Number.isNaN(l1)||Number.isNaN(l2)||Number.isNaN(l3)){
+    if (!(totalDist>0)||Number.isNaN(l1)||Number.isNaN(l2)||Number.isNaN(l3)){
         display.textContent="Enter a Valid Length";
         return;
     }

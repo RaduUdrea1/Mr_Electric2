@@ -7,7 +7,7 @@ Q_ref=1e-9
 R_ref=5.0
 E_ref=K*Q_ref/(R_ref**2)
 
-def scale_and_clip(Ex,Ey,Ez,scale=2.0,L_max=3):
+def scale_and_clip(Ex,Ey,Ez,scale=2.0,L_max=1):
     Explot=Ex/E_ref*scale
     Eyplot=Ey/E_ref*scale
     Ezplot=Ez/E_ref*scale
@@ -180,7 +180,7 @@ def two_charge(q1, q2, px, py, pz, l1, l2, l3, n=8, span=100, r_min=12, scale=2.
 
         "totalDist":float(totalDist),
     }
-def One_chargeGauss(q, sr, px,py,pz, n=8, span=100, r_min=2.5, scale=12, Cx=0.0, Cy=0.0, Cz=0.0):
+def One_chargeGauss(q, sr, px,py,pz, n=8, span=100, r_min=12, Cx=0.0, Cy=0.0, Cz=0.0):
     q=q*1e-9
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)

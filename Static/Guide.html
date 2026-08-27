@@ -15,7 +15,8 @@
   <h1>This is a guide to running the web simulator:</h1>
 <p>Navigate to the simulate page, and select a mode from the dropdown menu.</p>
 <p>Once selected, input the suggested inputs, some modes will ask for one or two charges, some for distances. Input all necessary values.</p>
-<p>Wait for pyodide to load, bottom output should read "Ready-click simulate", when this occurs, click simulate.</p>
+<p>Recommended values will automatically be present, it's not recommended to lower the charge below 10 nanocoulombs, or past a few hundred nanocoulombs, results may grow unstable!</p>
+<p>Wait for pyodide to load, bottom output should read "Ready-run simulation!", when this occurs, click Run simulation.</p>
 <p>Scroll around the plot with your mouse, and take a look at the output information.</p>
 
 <h2> This is a guide to running the python file:</h2>
@@ -25,14 +26,15 @@
 
 <h3>Notes for both run modes:</h3>
 <p>A charge of zero will give an error, as will any radius of zero for the gaussian sphere, pick wisely!</p>
-<p>Suggested Values: Before typing anything into the inputs, you will see suggested values, try these!</p>
+<p>Suggested Values: Before typing anything into the inputs, you will see suggested values, try these! Most charges are at their most useful at 10 nanocoulombs, furthermore the distances in the two charge mode should be decently far away in the 100x100 grid!</p>
 
 <h4>Using it for calculations:</h4>
 <p>The electric field simulator is intended to be very useful for electrostatics. When you select a probe point in 3d space, the field will return the electric field magnitude at that point. Which is very useful for electrostatics problems. You can even check the results yourself!</p>
+<p>The Dirac Delta simulator is more for entertainment, the Gaussian Sphere is still a work in progress. New features are coming soon that will make it more useful!</p>
   <a href="Index.html" class="btn btn-blue">Home</a>
   <a href="Physics.html" class="btn btn-blue">Physics</a>
   <a href="Guide.html" class="btn btn-blue">*Guide*</a>
   <a href="Gallery.html" class="btn btn-blue">Gallery</a>
-  <a href="Simulate.html" class="btn btn-blue">Simulate</a>
+  <a href="Simulate.html" class="btn btn-yellow">Simulate</a>
 </body>
 </html>
