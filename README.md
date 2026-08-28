@@ -38,8 +38,13 @@ Go to terminal, and input "pip install numpy scipy matplotlib"  or use "pip inst
 After downloading requirements and simulator, run Physics.py using green play button. Prompts will appear asking you to select functions, the functions are listed above.
 HTML site is in static, python file (what you run, isn't). To see screenshots, run static/Index.html and go to gallery.  
 
+**Using it for math:**  
+The main purpose of Mr. Electric is to be used as a way to simulate and visualize your electrostatics homework. And even use it as a way to check your answers. Because the simulators returns magnitude of electric field and the components of that electric field, one can use
+it to check answers in problems. The math developed is accurate, and has been tested and works!
+
+
 **Honest Limits:**  
-The charges need to be modified so that the vector arrows scale properly, right now everything has been scaled to a base size to avoid any breaks and scaling issues at the origin, by next releases, magnitude scaling will be improved.  
+One unified color for the One Charge mode, Two Charge Mode and the Gaussian Sphere. The Gaussian Sphere won't be useful for calculations until more additions have been made. Dirac Delta mode purely cosmetic..  
 
 **Credits:**  
 Griffith's Electrodynamics Fourth Edition.  
