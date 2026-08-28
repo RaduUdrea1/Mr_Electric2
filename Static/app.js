@@ -97,7 +97,7 @@ async function runSimulation(){
 
 
 
-    display.textContent=`One charge field/Charge= ${q} nanocoulombs, electric field magnitude=${data.Emag} N/C`;
+    display.textContent=`One charge field/Charge= ${q} nanocoulombs, total electric field magnitude at probe=${data.Emag} N/C, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C`;
     plotCones(data, [probeTrace,centerTrace]);
     }
 
@@ -165,7 +165,7 @@ async function runSimulation(){
     }
 
 
-    display.textContent=`Two Charge Field/ First charge= ${q1} nanocoulombs, Second Charge= ${q2} nanocoulombs, distance= ${data.totalDist} meters, electric field magnitude=${data.Emag} N/C`;
+    display.textContent=`Two Charge Field/ First charge= ${q1} nanocoulombs, Second Charge= ${q2} nanocoulombs, distance= ${data.totalDist} meters, total electric field magnitude at probe=${data.Emag} N/C, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C`;
     plotCones(data,[probeTrace,center1Trace,center2Trace]);
     }
     else if (mode=="One_chargeGauss"){
@@ -223,7 +223,7 @@ async function runSimulation(){
     x:[0],y:[0],z:[0]
     }
 
-    display.textContent=`Charge= ${q} nanocoulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}), flux through sphere = ${data.flux} N*m^2/C,voltage = ${data.V} Volts,electric field magnitude = ${data.Emag} N/C`;
+    display.textContent=`Charge= ${q} nanocoulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}), flux through sphere = ${data.flux} N*m^2/C,voltage = ${data.V} Volts, total electric field magnitude at probe=${data.Emag} N/C, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C`;
     plotCones(data,[sphereTrace,probeTrace,centerTrace]);
     }
     else if(mode==="Dirac_Delta"){
