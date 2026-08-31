@@ -7,7 +7,7 @@ Python.
 
 **Try it:**   
 live:https://raduudrea1.github.io/Mr_Electric2/  
-local:`cd Static` then `python -m http.server 8000`, open http://localhost:8000/Index.html
+local:`cd Static` then `python -m http.server 8000`, open http://localhost:8000/Index.html  
 video demo: https://youtu.be/MdVX5a0pGhE
 
 
