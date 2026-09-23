@@ -1,16 +1,27 @@
 import numpy as np
 
 
+
 K=8.99e9
 e0=8.854187817e-12
 Q_ref=1e-9
 R_ref=5.0
 E_ref=K*Q_ref/(R_ref**2)
 
-def scale_and_clip(Ex,Ey,Ez,scale=2.0,L_max=1):
-    Explot=Ex/E_ref*scale
-    Eyplot=Ey/E_ref*scale
-    Ezplot=Ez/E_ref*scale
+def scale_and_clip(Ex,Ey,Ez,scale=2.0,L_max=1.0, adapt=0.5):
+    Emag=np.sqrt(Ex**2+Ey**2+Ez**2)
+    positive=Emag[Emag>0]
+    if positive.size==0:
+        return Ex*0, Ey*0, Ez*0
+    e_local=float(np.percentile(positive,90))
+    if e_local < 1e-30:
+        e_local=1e-30
+
+    e_ref=(e_local**adapt)*(E_ref**(1.0-adapt))
+
+    Explot=Ex/e_ref*scale
+    Eyplot=Ey/e_ref*scale
+    Ezplot=Ez/e_ref*scale
 
     L=np.sqrt(Explot**2+Eyplot**2+Ezplot**2)
     too_long=L>L_max
@@ -22,24 +33,29 @@ def scale_and_clip(Ex,Ey,Ez,scale=2.0,L_max=1):
         Ezplot[too_long] *= factor
     return Explot, Eyplot, Ezplot
 
-def one_charge(q, px, py, pz, n=8, span=100, r_min=12, scale=2.0):
+def one_charge(q, x,y,z , px, py, pz, n=8, span=100, r_min=12, scale=2.0):
     q = q * 1e-9
     x1d=np.linspace(-span,span,n)
     y1d=np.linspace(-span,span,n)
     z1d=np.linspace(-span,span,n)
     X,Y,Z=np.meshgrid(x1d,y1d,z1d)
-    r=np.sqrt(X**2+Y**2+Z**2)
+    rx=X-x
+    ry=Y-y
+    rz=Z-z
+    r=np.sqrt(rx**2+ry**2+rz**2)
     r_safe = np.maximum(r, 1e-9)
-    Ex=K*q*X/r_safe**3
-    Ey=K*q*Y/r_safe**3
-    Ez=K*q*Z/r_safe**3
+    Ex=K*q*rx/r_safe**3
+    Ey=K*q*ry/r_safe**3
+    Ez=K*q*rz/r_safe**3
 
-    X0, Y0, Z0 = (0, 0, 0)
-    prx = px - X0
-    pry = py - Y0
-    prz = pz - Z0
+
+
+    prx = px - x
+    pry = py - y
+    prz = pz - z
 
     pr = np.sqrt(prx ** 2 + pry ** 2 + prz ** 2)
+    pV = K * q / pr
 
     if pr < 1e-9:
         return {"ok": False, "message": "Your probe is at the charge point itself"}
@@ -69,29 +85,33 @@ def one_charge(q, px, py, pz, n=8, span=100, r_min=12, scale=2.0):
         "Ey": float(pEy),
         "Ez": float(pEz),
         "Emag":float(PEmag),
+        "qx":float(x),
+        "qy":float(y),
+        "qz":float(z),
         "px":float(px),
         "py":float(py),
         "pz":float(pz),
         "c": c_vals.tolist(),
         "cmin": float(np.percentile(c_vals, 5)),
         "cmax": float(np.percentile(c_vals, 95)),
+        "V":float(pV),
 
 
 
     }
 
-def two_charge(q1, q2, px, py, pz, l1, l2, l3, n=8, span=100, r_min=12, scale=2.0):
+def two_charge(q1, q2, px, py, pz, x1, y1, z1, x2,y2,z2 , n=8, span=100, r_min=12, scale=2.0):
     x1d=np.linspace(-span,span,n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)
     X, Y, Z = np.meshgrid(x1d, y1d, z1d)
     q1=q1*1e-9
     q2=q2*1e-9
+    lx=(x2-x1)
+    ly=(y2-y1)
+    lz=(z2-z1)
 
-    x1,y1,z1=(-l1/2,-l2/2,-l3/2)
-    x2,y2,z2=(l1/2,l2/2,l3/2)
-
-    totalDist=np.sqrt(l1**2+l2**2+l3**2)
+    totalDist=np.sqrt(lx**2+ly**2+lz**2)
 
     rx1 = X - x1
     ry1 = Y - y1
@@ -152,10 +172,15 @@ def two_charge(q1, q2, px, py, pz, l1, l2, l3, n=8, span=100, r_min=12, scale=2.
     pEy=pEy1+pEy2
     pEz=pEz1+pEz2
 
+
+
     Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
     PEmag=np.sqrt(pEx**2+pEy**2+pEz**2)
     mask = (r1 >= r_min) & (r2>=r_min)
     c_vals = Emag[mask]
+
+    pV = K * q1 / pr1 + K * q2 / pr2
+    U = K * q1 * q2 / totalDist
     return {
         "ok": True,
         "x": X[mask].tolist(),
@@ -171,26 +196,36 @@ def two_charge(q1, q2, px, py, pz, l1, l2, l3, n=8, span=100, r_min=12, scale=2.
         "px": float(px),
         "py": float(py),
         "pz": float(pz),
-        "l1":float(l1),
-        "l2":float(l2),
-        "l3":float(l3),
+        "x1":float(x1),
+        "y1":float(y1),
+        "z1":float(z1),
+        "x2":float(x2),
+        "y2":float(y2),
+        "z2":float(z2),
+        "lx":float(lx),
+        "ly":float(ly),
+        "lz":float(lz),
         "c": c_vals.tolist(),
         "cmin": float(np.percentile(c_vals, 5)),
         "cmax": float(np.percentile(c_vals, 95)),
-
         "totalDist":float(totalDist),
+        "V":float(pV),
+        "U":float(U),
     }
-def One_chargeGauss(q, sr, px,py,pz, n=8, span=100, r_min=12, Cx=0.0, Cy=0.0, Cz=0.0):
+def One_chargeGauss(q,x,y,z, sr, px,py,pz, n=8, span=100, r_min=12, Cx=0.0, Cy=0.0, Cz=0.0):
     q=q*1e-9
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)
     X, Y, Z = np.meshgrid(x1d, y1d, z1d)
-    r = np.sqrt(X ** 2 + Y ** 2 + Z ** 2)
+    rx=X-x
+    ry=Y-y
+    rz=Z-z
+    r = np.sqrt(rx ** 2 + ry ** 2 + rz ** 2)
     r_safe = np.maximum(r, 1e-9)
-    Ex = K * q * X / r_safe ** 3
-    Ey = K * q * Y / r_safe ** 3
-    Ez = K * q * Z / r_safe ** 3
+    Ex = K * q * rx / r_safe ** 3
+    Ey = K * q * ry / r_safe ** 3
+    Ez = K * q * rz / r_safe ** 3
 
     Emag = np.sqrt(Ex ** 2 + Ey ** 2 + Ez ** 2)
 
@@ -199,18 +234,26 @@ def One_chargeGauss(q, sr, px,py,pz, n=8, span=100, r_min=12, Cx=0.0, Cy=0.0, Cz
     if sr <=0:
         return{"ok": False, "message": "Sr should be a positive number"}
 
-    q_enc = q
-    flux = q_enc / e0
+    Cx,Cy,Cz=0.0,0.0,0.0
+    r_from_center=np.sqrt((x-Cx)**2+(y-Cy)**2+(z-Cz)**2)
+    if r_from_center<sr:
+        q_enc=q
+    else:
+        q_enc=0.0
+
+    flux=q_enc/e0
+
+
     u=np.linspace(0,2*np.pi,48)
     v=np.linspace(0,np.pi,24)
     U,V=np.meshgrid(u,v)
     Xs=Cx+sr*np.sin(V)*np.cos(U)
     Ys=Cy+sr*np.sin(V)*np.sin(U)
     Zs=Cz+sr*np.cos(V)
-    X0,Y0,Z0=(0,0,0)
-    prx=px-X0
-    pry=py-Y0
-    prz=pz-Z0
+
+    prx=px-x
+    pry=py-y
+    prz=pz-z
 
 
     pr=np.sqrt(prx ** 2 + pry ** 2 + prz ** 2)
@@ -226,6 +269,8 @@ def One_chargeGauss(q, sr, px,py,pz, n=8, span=100, r_min=12, Cx=0.0, Cy=0.0, Cz
     Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
     mask = r >= r_min
     c_vals = Emag[mask]
+
+
     return {
         "ok": True,
         "x": X[mask].tolist(),
@@ -243,36 +288,62 @@ def One_chargeGauss(q, sr, px,py,pz, n=8, span=100, r_min=12, Cx=0.0, Cy=0.0, Cz
         "Xs":Xs.ravel().tolist(),
         "Ys":Ys.ravel().tolist(),
         "Zs":Zs.ravel().tolist(),
+        "qx":float(x),
+        "qy":float(y),
+        "qz":float(z),
         "px":float (px),
         "py":float (py),
         "pz": float (pz),
         "c": c_vals.tolist(),
         "cmin": float(np.percentile(c_vals, 5)),
         "cmax": float(np.percentile(c_vals, 95)),
+        "q_enc":float(q_enc),
+        "inside":bool(r_from_center<sr),
+        "Cx":float(Cx),
+        "Cy":float(Cy),
+        "Cz":float(Cz),
+
 
     }
-def Dirac_Delta(q, n=8, span=2):
+def Charged_ring(q, px,py,pz , n=8, span=2):
     q=q*1e-9
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)
     X, Y, Z = np.meshgrid(x1d, y1d, z1d)
+    R=10
 
-    dx,dy,dz=(x1d[1]-x1d[0],y1d[1]-y1d[0],z1d[1]-z1d[0])
-    dV=dx*dy*dz
-    rho=np.zeros_like(X)
-    i = np.argmin(np.abs(y1d - 0))
-    j = np.argmin(np.abs(x1d - 0))
-    kidx = np.argmin(np.abs(z1d - 0))
-    rho[i, j, kidx] = q / dV
-    q_check = np.sum(rho) * dV
+    N=36
+    theta=np.linspace(0, 2*np.pi, N,endpoint=False)
+    xi=R*np.cos(theta)
+    yi=R*np.sin(theta)
+    zi=np.zeros(N)
+    qi=(q*1e-9)/N
+
+    pEx=pEy=pEz=0
+    for i in range(N):
+        rx=px-xi[i]
+        ry=py-yi[i]
+        rz=pz-zi[i]
+        r=np.sqrt(rx**2+ry**2+rz**2)
+    if r<1e-9:
+        return{"ok":False,"message":"Probe is on Ring"}
+    pEx +=k*qi*rx/r**3
+    pEy +=k*qi*ry/r**3
+    pEz +=k*qi*rz/r**3
+
+
+
+    rx=X-0
+    ry=Y-0
+    rz=Z-0
 
 
     r = np.sqrt(X ** 2 + Y ** 2 + Z ** 2)
     r_safe = np.maximum(r, 1e-9)
-    Ex = K * q * X / r_safe ** 3
-    Ey = K * q * Y / r_safe ** 3
-    Ez = K * q * Z / r_safe ** 3
+    Ex = K * q * rx / r_safe ** 3
+    Ey = K * q * ry / r_safe ** 3
+    Ez = K * q * rz / r_safe ** 3
     Emag = np.sqrt(Ex ** 2 + Ey ** 2 + Ez ** 2)
 
     if Emag.max() == 0:
@@ -300,3 +371,69 @@ def Dirac_Delta(q, n=8, span=2):
         "cmax": float(np.percentile(c_vals, 95)),
     }
 
+
+def Relative_permittivity(q, x, y, z, px, py, pz,m, n=8, span=100):
+    q = q * 1e-9
+    x1d = np.linspace(-span, span, n)
+    y1d = np.linspace(-span, span, n)
+    z1d = np.linspace(-span, span, n)
+    X, Y, Z = np.meshgrid(x1d, y1d, z1d)
+    rx = X - x
+    ry = Y - y
+    rz = Z - z
+    r = np.sqrt(rx ** 2 + ry ** 2 + rz ** 2)
+    r_safe = np.maximum(r, 1e-9)
+    r_min=12
+
+    k=K/m
+    Ex = k * q * rx / r_safe ** 3
+    Ey = k * q * ry / r_safe ** 3
+    Ez = k * q * rz / r_safe ** 3
+
+    prx = px - x
+    pry = py - y
+    prz = pz - z
+
+    pr = np.sqrt(prx ** 2 + pry ** 2 + prz ** 2)
+    pV = k * q / pr
+
+    if pr < 1e-9:
+        return {"ok": False, "message": "Your probe is at the charge point itself"}
+
+    pEx = k * q * prx / pr ** 3
+    pEy = k * q * pry / pr ** 3
+    pEz = k * q * prz / pr ** 3
+
+    Emag = np.sqrt(Ex ** 2 + Ey ** 2 + Ez ** 2)
+    if Emag.max() == 0:
+        return {"ok": False, "message": "Electric Field is zero"}
+
+    PEmag = np.sqrt(pEx ** 2 + pEy ** 2 + pEz ** 2)
+    Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
+    mask = r >= r_min
+    c_vals = Emag[mask]
+    return {
+        "ok": True,
+        "x": X[mask].tolist(),
+        "y": Y[mask].tolist(),
+        "z": Z[mask].tolist(),
+        "u": Explot[mask].tolist(),
+        "v": Eyplot[mask].tolist(),
+        "w": Ezplot[mask].tolist(),
+        "Ex": float(pEx),
+        "Ey": float(pEy),
+        "Ez": float(pEz),
+        "Emag": float(PEmag),
+        "qx": float(x),
+        "qy": float(y),
+        "qz": float(z),
+        "px": float(px),
+        "py": float(py),
+        "pz": float(pz),
+        "c": c_vals.tolist(),
+        "cmin": float(np.percentile(c_vals, 5)),
+        "cmax": float(np.percentile(c_vals, 95)),
+        "V": float(pV),
+        "m":float(m),
+
+    }

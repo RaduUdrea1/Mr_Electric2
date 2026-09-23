@@ -25,6 +25,8 @@
 <p>This is a representation of just a few electrostatic functions from Griffiths Electrodynamics. It contains fields from point charges and a schematic delta cluster.
  This code was computed in Numpy, Scipy and Matplot.</p>
 <p>Below is the math behind each function:</p>
+<div class="card-row">
+  <section class="card">
 <h3>Point charge (Coulomb)</h3>
 <p>
   \[
@@ -33,22 +35,29 @@
   \]
 </p>
 <p>This function was used to compute the vector field at each location in a grid. There is a masking element so that the function doesn't compute at or very near the origin.
-It was also used to compute in the two charge field, the charges are in superposition, and so the vector field is simply the sum of the two charge functions. .</p>
-<h3>Gaussian sphere</h3>
+It was also used to compute in the two charge field, the charges are in superposition, and so the vector field is simply the sum of the two charge functions. </p>
+</section>
+  <section class="card">
+
+  <h3>Gaussian sphere</h3>
 <p>
   \[
   \oint_S \mathbf{E}\cdot d\mathbf{a} = \frac{Q_{\mathrm{enc}}}{\varepsilon_0}
   \]
 </p>
 <p>This function was used to compute the flux flowing through a gaussian sphere of radius r.</p>
+    </section>
+  <section class="card">
 <h3>Dirac delta</h3>
 <p>
   \[
   \rho(\mathbf{r}) = q\,\delta^3(\mathbf{r}-\mathbf{r}')
   \]
 </p>
-<p>This function is purely cosmetic, graphically a dirac delta function would just be an infinitely tall and narrow spike, the code just represents a cluster of points. </p>
 
+<p>This function is purely cosmetic, graphically a dirac delta function would just be an infinitely tall and narrow spike, the code just represents a cluster of points. </p>
+</section>
+</div>
 
 
 <a href="Index.html" class="btn btn-blue">Home</a>

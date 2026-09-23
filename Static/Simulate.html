@@ -21,7 +21,8 @@
     <option value="One_Charge">One-Charge Field</option>
     <option value="Two_Charge">Two-Charge Field</option>
     <option value="One_chargeGauss">Gaussian Sphere and Probe</option>
-    <option value="Dirac_Delta">Dirac Delta Cluster</option>
+    <option value="Charged_ring">Dirac Delta Cluster</option>
+    <option value="Vacuum_permittivity">Permittivity</option>
 </select>
 
 
@@ -30,8 +31,21 @@
 <div id="inputs-one">
 
     <div class="field">
-    <label for="charge">Charge q (nanoCoulombs):</label>
-    <input type = "number" id = "charge" name = "charge" placeholder value = "10" required>
+    <label for="charge">Charge q (nanoCoulombs):<span id="charge-val">10</span></label>
+    <input type = "range" id = "charge" name = "charge" min="-100" max="100" step="1" value="10">
+    </div>
+
+    <div class="field">
+    <label for="locationx"> Location x (meters)</label>
+    <input type="number" id="locationx"name="locationx"placeholder value = "0" required>
+    </div>
+     <div class="field">
+    <label for="locationy"> Location y (meters)</label>
+    <input type="number" id="locationy"name="locationy"placeholder value = "0" required>
+    </div>
+     <div class="field">
+    <label for="locationz"> Location z (meters)</label>
+    <input type="number" id="locationz"name="locationz"placeholder value = "0" required>
     </div>
 
     <div class="field">
@@ -54,25 +68,39 @@
 <div id="inputs-two" style="display:none">
 
     <div class="field">
-    <label for="charge1">Charge q1 (nanoCoulombs):</label>
-    <input type = "number" id = "charge1" name = "charge" placeholder value = "10" required>
+    <label for="charge1">Charge q1 (nanoCoulombs):<span id="charge-val1">10</span></label>
+    <input type = "range" id = "charge1" name = "charge" min="-100" max="100" step="1" value="10">
         </div>
      <div class="field">
-    <label for="charge2">Charge q2 (nanoCoulombs):</label>
-    <input type = "number" id = "charge2" name = "charge" placeholder value = "-10" required>
+    <label for="charge2">Charge q2 (nanoCoulombs):<span id="charge-val2">-10</span></label>
+    <input type = "range" id = "charge2" name = "charge" min="-100" max="100" step="1" value="-10">
          </div>
     <div class="field">
-    <label for="distance(x)">Distance (Meters):</label>
-    <input type = "number" id = "distance(x)" name = "charge" placeholder value = "50" required>
+    <label for="locationx1">Location of first charge(x):</label>
+    <input type = "number" id = "locationx1" name = "locationx1" placeholder value = "50" required>
         </div>
     <div class="field">
-    <label for="distance(y)">Distance (Meters):</label>
-    <input type = "number" id = "distance(y)" name = "charge" placeholder value = "50" required>
+    <label for="locationy1">Location of first charge(y):</label>
+    <input type = "number" id = "locationy1" name = "locationy1" placeholder value = "50" required>
         </div>
     <div class="field">
-    <label for="distance(z)">Distance (Meters):</label>
-    <input type = "number" id = "distance(z)" name = "charge" placeholder value = "50" required>
+    <label for="locationz1">Location of first charge(z):</label>
+    <input type = "number" id = "locationz1" name = "locationz1" placeholder value = "50" required>
         </div>
+    <label for="locationx2">Location of second charge(x):</label>
+    <input type = "number" id = "locationx2" name = "locationx2" placeholder value = "-50" required>
+        </div>
+    <div class="field">
+    <label for="locationy2">Location of second charge(y):</label>
+    <input type = "number" id = "locationy2" name = "locationy2" placeholder value = "-50" required>
+        </div>
+    <div class="field">
+    <label for="locationz2">Location of second charge(z):</label>
+    <input type = "number" id = "locationz2" name = "locationz2" placeholder value = "-50" required>
+        </div>
+
+
+
     <div class="field">
     <label for="xcoordinate2">X-Coordinate of Probe (Meters):</label>
     <input type="number" id="xcoordinate2" name="X-Coordinate" placeholder value="1" required>
@@ -91,13 +119,26 @@
 
 <div id="inputs-three" style="display:none">
     <div class="field">
-    <label for="chargeG">Charge q (nanoCoulombs):</label>
-    <input type="number" id="chargeG" name="charge" placeholder value="10" required>
+    <label for="chargeG">Charge q (nanoCoulombs):<span id="charge-valg">10</span></label>
+    <input type="range" id="chargeG" name="charge" min="-100" max="100" step="1" value="10">
         </div>
+
     <div class="field">
     <label for="radius">Radius of sphere (Meters):</label>
     <input type="number" id="radius" name="radius" placeholder value="50" required>
         </div>
+    <div class="field">
+    <label for="locationxg"> Location x (meters)</label>
+    <input type="number" id="locationxg"name="locationxg"placeholder value = "0" required>
+    </div>
+     <div class="field">
+    <label for="locationyg"> Location y (meters)</label>
+    <input type="number" id="locationyg"name="locationyg"placeholder value = "0" required>
+    </div>
+     <div class="field">
+    <label for="locationzg"> Location z (meters)</label>
+    <input type="number" id="locationzg"name="locationzg"placeholder value = "0" required>
+    </div>
     <div class="field">
     <label for="xcoordinate3">X-Coordinate of Probe (Meters):</label>
     <input type="number" id="xcoordinate3" name="X-Coordinate" placeholder value="1" required>
@@ -117,7 +158,74 @@
     <label for="chargeD">Charge q (nanoCoulombs):</label>
     <input type="number" id="chargeD" name="charge" placeholder value="10" required>
         </div>
+    <div class="field">
+    <label for="locationxr">x-Coordinate of Probe (Meters):</label>
+    <input type="number" id="locationxr" name="x-Coordinate" placeholder value="0" required>
+    </div>
+    <div class="field">
+    <label for="locationyr">y-Coordinate of Probe (Meters):</label>
+    <input type="number" id="locationyr" name="y-Coordinate" placeholder value="0" required>
+    </div>
+    <div class="field">
+    <label for="locationzr">x-Coordinate of Probe (Meters):</label>
+    <input type="number" id="locationzr" name="z-Coordinate" placeholder value="0" required>
+    </div>
 </div>
+
+    <div id="inputs-five" style="display:none">
+     <div class="field">
+    <label for="chargep">Charge q (nanoCoulombs):<span id="charge-valp">10</span></label>
+    <input type = "range" id = "chargep" name = "charge" min="-100" max="100" step="1" value="10">
+    </div>
+
+    <div class="field">
+    <label for="locationxp"> Location x (meters)</label>
+    <input type="number" id="locationxp"name="locationx"placeholder value = "0" required>
+    </div>
+     <div class="field">
+    <label for="locationyp"> Location y (meters)</label>
+    <input type="number" id="locationyp"name="locationy"placeholder value = "0" required>
+    </div>
+     <div class="field">
+    <label for="locationzp"> Location z (meters)</label>
+    <input type="number" id="locationzp"name="locationz"placeholder value = "0" required>
+    </div>
+
+    <div class="field">
+    <label for="xcoordinate1p">X-Coordinate of Probe (Meters):</label>
+    <input type="number" id="xcoordinate1p" name="X-Coordinate" placeholder value="1" required>
+     </div>
+
+    <div class="field">
+    <label for="ycoordinate1p">Y-Coordinate of Probe (Meters):</label>
+    <input type="number" id="ycoordinate1p" name="Y-Coordinate" placeholder value="0" required>
+    </div>
+
+    <div class="field">
+    <label for="zcoordinate1p">z-Coordinate of Probe (Meters):</label>
+    <input type="number" id="zcoordinate1p" name="z-Coordinate" placeholder value="0" required>
+    <div class="field">
+    <label for="permittivity">Choose Permittivity:</label>
+    <select name="permittivity" id="permittivity">
+        <option value="1.0">Free Space</option>
+        <option value="1.0006">Air</option>
+        <option value="1.00007">Helium</option>
+        <option value="2.1">Teflon</option>
+        <option value="3.0">Paper</option>
+        <option value="8.0">Glass</option>
+        <option value="24.3">Ethanol</option>
+        <option value="80.0">Pure Water (no electrolytes)</option>
+        <option value="130.0">Titanium Dioxide</option>
+
+
+    </select>
+
+
+    </div>
+    </div>
+
+
+    </div>
 
 <button type="button" class = "btn btn-blue" id="simulate-btn">Run Simulation</button>
 

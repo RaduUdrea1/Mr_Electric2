@@ -1,7 +1,11 @@
 body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(180deg, #0099ff, #0033cc);
+      background-image: url("EBackground.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -9,6 +13,7 @@ body {
       text-align: center;
       color: white;
       font-family: Arial, sans-serif;
+
     }
     h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
     p  { margin-bottom: 2rem; }
@@ -33,14 +38,36 @@ body.page-simulate{
 }
 
 
+.card{
+    background: rgba(0,20,60,0.55);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius:14px;
+    padding:1.25rem 1.5rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    text-align:left;
+}
+.card h2,
+.card p{
+    margin-top:0.35rem;
+    margin-bottom:0.75rem;
+}
+
+.card-row{
+    width:min(1000px, 100%);
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
 
 .controls{
     max-width: 520px;
     width: 100%;
     padding: 1.25rem;
     margin-bottom: 1rem;
-    background:rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
+    background:rgba(0, 20, 60, 0.55);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 14px;
 }
 #display-plot{
     margin:0.75rem 0 1rem;
