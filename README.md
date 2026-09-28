@@ -18,7 +18,9 @@ Run mode 2: A vector field that simulates the interactions between two charges w
 charge strengths.        
 Run mode 3: A vector field of given strength, with a gaussian sphere encircling it, and a probe point, with radius and probe point coordinates chosen by the user.
 Function will return flux as well.         
-Run mode 4: A purely cosmetic interpretation of a dirac delta cluster. Since dirac delta represents particles, this was an attempt to simulate it.
+Run mode 4: A fixed charged ring of variable strength and radius of 40 meters.  
+Run mode 5: An electric field of variable charge strength, and also variable permittivity. 
+
 
 **Web Visualizer:**  
 The main web visualizer runs on html. A separate app.js and Static.py communicates with the html page.
@@ -44,7 +46,7 @@ it to check answers in problems. The math developed is accurate, and has been te
 
 
 **Honest Limits:**  
-One unified color for the One Charge mode, Two Charge Mode and the Gaussian Sphere. The Gaussian Sphere won't be useful for calculations until more additions have been made. Dirac Delta mode purely cosmetic..  
+One unified color for the One Charge mode, Two Charge Mode and the Gaussian Sphere. No way to move the charged ring yet.
 
 **Credits:**  
 Griffith's Electrodynamics Fourth Edition.  

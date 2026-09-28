@@ -34,6 +34,16 @@ async function setup(){
         throttledRun();
 
     });
+    document.getElementById("chargeD").addEventListener("input",(e)=>{
+        document.getElementById("charge-vald").textContent=e.target.value;
+        throttledRun();
+
+    });
+    document.getElementById("chargep").addEventListener("input",(e)=>{
+        document.getElementById("charge-valp").textContent=e.target.value;
+        throttledRun();
+
+    });
 }
 function throttle(fn, wait) {
   let last = 0;
@@ -221,7 +231,7 @@ async function runSimulation(){
     }
 
 
-    display.textContent=`Two Charge Field/ First charge= ${q1} nanocoulombs, Second Charge= ${q2} nanocoulombs, distance= ${data.totalDist} meters, total electric field magnitude at probe=${data.Emag} N/C, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C, Potential at probe=${data.V} volts, Potential Energy at probe=${data.U} joules`;
+    display.textContent=`Two Charge Field/ First charge= ${q1} nanocoulombs, Second Charge= ${q2} nanocoulombs, distance= ${data.totalDist} meters, total electric field magnitude at probe=${data.Emag} N/C, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C, Potential at probe=${data.V} volts, Interaction energy of two charges=${data.U} joules`;
     plotCones(data,[probeTrace,center1Trace,center2Trace]);
     }
     else if (mode=="One_chargeGauss"){
@@ -287,32 +297,51 @@ async function runSimulation(){
     x:[data.qx],y:[data.qy],z:[data.qz]
     }
 
-    display.textContent=`Charge= ${q} nanocoulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}),total electric field magnitude at probe=${data.Emag} N/C, ${data.inside? "INSIDE":"OUTSIDE"}, flux through sphere = ${data.flux} N*m^2/C,voltage = ${data.V} Volts, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C`;
+    display.textContent=`Charge= ${q} nanocoulombs, Gaussian Surface/ Sphere radius = ${sr} meters, probe coordinate= (${px},${py},${pz}),total electric field magnitude at probe=${data.Emag} N/C, ${data.inside? " CHARGE ENCLOSED":" CHARGE OUTSIDE"}, flux through sphere = ${data.flux} N*m^2/C,voltage = ${data.V} Volts, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C`;
     plotCones(data,[sphereTrace,probeTrace,centerTrace]);
     }
     else if(mode==="Charged_ring"){
     const q=Number(document.getElementById("chargeD").value);
+    const px=Number(document.getElementById("locationxr").value)
+    const py=Number(document.getElementById("locationyr").value)
+    const pz=Number(document.getElementById("locationzr").value)
+
     if (Number.isNaN(q)){
         display.textContent="Enter a Valid Charge";
         return;}
     pyodide.globals.set("q_js",q);
-    const result=await pyodide.runPythonAsync(`Charged_ring(float(q_js))`);
+    pyodide.globals.set("px_js",px)
+    pyodide.globals.set("py_js",py)
+    pyodide.globals.set("pz_js",pz)
+
+
+    const result=await pyodide.runPythonAsync(`Charged_ring(float(q_js),float(px_js),float(py_js),float(pz_js))`);
     const data=result.toJs({dict_converter:Object.fromEntries});
     if(!data.ok){
     display.textContent=data.message||"Failed";
     return;}
-    const centerTrace={
 
-    type:"scatter3d",
+
+    const ringTrace={
     mode:"markers",
-    marker:{size: 10,color:"red"},
-    name:"Charge",
-    x:[0],y:[0],z:[0]
+    marker:{size: 4, color:"red"},
+    name:"Charged Ring",
+    type:"scatter3d",
+    x: data.xi, y:data.yi, z:data.zi
+    }
+
+     const probeTrace={
+    type: "scatter3d",
+    mode:"markers",
+    marker:{size: 8, color:"lime"},
+    name:"Probe",
+    x: [data.px], y: [data.py], z: [data.pz]
     }
 
 
-    display.textContent=`Charged Ring Plot/ Charge = ${q} nanocoulombs, ∫ρ dV ≈ ${data.q_check} C`;
-    plotCones(data,[centerTrace]);
+
+    display.textContent=`Charged Ring Plot/ Charge = ${q} nanocoulombs, total electric field magnitude at probe=${data.Emag}N/C, E as components=(${data.Ex},${data.Ey},${data.Ez})N/C `;
+    plotCones(data,[ringTrace,probeTrace]);
 
     }
 
@@ -368,7 +397,7 @@ async function runSimulation(){
 
 
 
-    display.textContent=`Permittivity Field/Charge= ${q} nanocoulombs, total electric field magnitude at probe=${data.Emag} N/C, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C, Potential at probe=${data.V} volts, Permittivity of space=${m}`;
+    display.textContent=`Permittivity Field/Charge= ${q} nanocoulombs, total electric field magnitude at probe=${data.Emag} N/C, E as components= (${data.Ex}, ${data.Ey}, ${data.Ez}) N/C, Potential at probe=${data.V} volts, Relative permittivity of space=${m}`;
     plotCones(data, [probeTrace,centerTrace]);
     }
     }
@@ -402,7 +431,7 @@ function updateInputs(){
     three.style.display="block";
     four.style.display="none";
     five.style.display="none";
-    } else if(mode==="Dirac_Delta"){
+    } else if(mode==="Charged_ring"){
     one.style.display="none";
     two.style.display="none";
     three.style.display="none";

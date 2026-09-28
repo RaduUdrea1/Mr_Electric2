@@ -55,7 +55,7 @@ def one_charge(q, x,y,z , px, py, pz, n=8, span=100, r_min=12, scale=2.0):
     prz = pz - z
 
     pr = np.sqrt(prx ** 2 + pry ** 2 + prz ** 2)
-    pV = K * q / pr
+
 
     if pr < 1e-9:
         return {"ok": False, "message": "Your probe is at the charge point itself"}
@@ -63,6 +63,8 @@ def one_charge(q, x,y,z , px, py, pz, n=8, span=100, r_min=12, scale=2.0):
     pEx = K * q * prx / pr ** 3
     pEy = K * q * pry / pr ** 3
     pEz = K * q * prz / pr ** 3
+
+    pV = K * q / pr
 
     Emag=np.sqrt(Ex**2+Ey**2+Ez**2)
     if Emag.max()==0:
@@ -305,70 +307,89 @@ def One_chargeGauss(q,x,y,z, sr, px,py,pz, n=8, span=100, r_min=12, Cx=0.0, Cy=0
 
 
     }
-def Charged_ring(q, px,py,pz , n=8, span=2):
+def Charged_ring(q, px,py,pz , n=12, span=100,r_min=2, R=40):
+    N = 36
     q=q*1e-9
+    qi=q/N
+
+
+
+    theta = np.linspace(0, 2 * np.pi, N, endpoint=False)
+    xi = R * np.cos(theta)
+    yi = R * np.sin(theta)
+    zi = np.zeros(N)
+
+    pEx = pEy = pEz = 0
+    for i in range(N):
+        rx = px - xi[i]
+        ry = py - yi[i]
+        rz = pz - zi[i]
+        r = np.sqrt(rx ** 2 + ry ** 2 + rz ** 2)
+        if r < 1e-9:
+            return {"ok": False, "message": "Probe is on Ring"}
+        pEx += K * qi * rx / r ** 3
+        pEy += K * qi * ry / r ** 3
+        pEz += K * qi * rz / r ** 3
+
+    PEmag=np.sqrt(pEx ** 2 + pEy ** 2 + pEz ** 2)
     x1d = np.linspace(-span, span, n)
     y1d = np.linspace(-span, span, n)
     z1d = np.linspace(-span, span, n)
     X, Y, Z = np.meshgrid(x1d, y1d, z1d)
-    R=10
 
-    N=36
-    theta=np.linspace(0, 2*np.pi, N,endpoint=False)
-    xi=R*np.cos(theta)
-    yi=R*np.sin(theta)
-    zi=np.zeros(N)
-    qi=(q*1e-9)/N
+    Ex=np.zeros_like(X)
+    Ey=np.zeros_like(Y)
+    Ez=np.zeros_like(Z)
+    r_closest=np.full_like(X, np.inf)
 
-    pEx=pEy=pEz=0
+
+
     for i in range(N):
-        rx=px-xi[i]
-        ry=py-yi[i]
-        rz=pz-zi[i]
-        r=np.sqrt(rx**2+ry**2+rz**2)
-    if r<1e-9:
-        return{"ok":False,"message":"Probe is on Ring"}
-    pEx +=k*qi*rx/r**3
-    pEy +=k*qi*ry/r**3
-    pEz +=k*qi*rz/r**3
+        rx=X-xi[i]
+        ry=Y-yi[i]
+        rz=Z-zi[i]
+
+        r=np.sqrt(rx ** 2 + ry ** 2 + rz ** 2)
+        r_safe=np.maximum(r,1e-9)
+        Ex +=K*qi*rx/r_safe**3
+        Ey +=K*qi*ry/r_safe**3
+        Ez +=K*qi*rz/r_safe**3
+        r_closest = np.minimum(r_closest, r)
+
+    mask = r_closest >= r_min
 
 
 
-    rx=X-0
-    ry=Y-0
-    rz=Z-0
 
-
-    r = np.sqrt(X ** 2 + Y ** 2 + Z ** 2)
-    r_safe = np.maximum(r, 1e-9)
-    Ex = K * q * rx / r_safe ** 3
-    Ey = K * q * ry / r_safe ** 3
-    Ez = K * q * rz / r_safe ** 3
     Emag = np.sqrt(Ex ** 2 + Ey ** 2 + Ez ** 2)
 
     if Emag.max() == 0:
         return {"ok": False, "message": "Electric Field is zero"}
 
 
-    R=1.2
-    r_inner=0.15
-    ok=(r>=r_inner)&(r<=R)
+
 
     Explot, Eyplot, Ezplot = scale_and_clip(Ex, Ey, Ez)
-    c_vals = Emag[ok]
+
 
     return{
         "ok": True,
-        "x": X[ok].tolist(),
-        "y": Y[ok].tolist(),
-        "z": Z[ok].tolist(),
-        "u": Explot[ok].tolist(),
-        "v": Eyplot[ok].tolist(),
-        "w": Ezplot[ok].tolist(),
-        "q_check": float(q_check),
-        "c": c_vals.tolist(),
-        "cmin": float(np.percentile(c_vals, 5)),
-        "cmax": float(np.percentile(c_vals, 95)),
+        "x": X[mask].tolist(),
+        "y": Y[mask].tolist(),
+        "z": Z[mask].tolist(),
+        "u": Explot[mask].tolist(),
+        "v": Eyplot[mask].tolist(),
+        "w": Ezplot[mask].tolist(),
+        "Emag":float(PEmag),
+        "px":float(px),
+        "py":float(py),
+        "pz":float(pz),
+        "xi":xi.tolist(),
+        "yi":yi.tolist(),
+        "zi":zi.tolist(),
+        "Ex":float(pEx),
+        "Ey":float(pEy),
+        "Ez":float(pEz),
     }
 
 
@@ -395,7 +416,7 @@ def Relative_permittivity(q, x, y, z, px, py, pz,m, n=8, span=100):
     prz = pz - z
 
     pr = np.sqrt(prx ** 2 + pry ** 2 + prz ** 2)
-    pV = k * q / pr
+
 
     if pr < 1e-9:
         return {"ok": False, "message": "Your probe is at the charge point itself"}
@@ -403,6 +424,8 @@ def Relative_permittivity(q, x, y, z, px, py, pz,m, n=8, span=100):
     pEx = k * q * prx / pr ** 3
     pEy = k * q * pry / pr ** 3
     pEz = k * q * prz / pr ** 3
+
+    pV = k * q / pr
 
     Emag = np.sqrt(Ex ** 2 + Ey ** 2 + Ez ** 2)
     if Emag.max() == 0:

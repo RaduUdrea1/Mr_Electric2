@@ -22,7 +22,7 @@
   <p class="tagline">Griffiths chapter 2 visualizer</p>
 
 </header>
-<p>This is a representation of just a few electrostatic functions from Griffiths Electrodynamics. It contains fields from point charges and a schematic delta cluster.
+<p>This is a representation of just a few electrostatic functions from Griffiths Electrodynamics. It contains fields from point charges, changes in permittivity, and a ring charge.
  This code was computed in Numpy, Scipy and Matplot.</p>
 <p>Below is the math behind each function:</p>
 <div class="card-row">
@@ -35,7 +35,8 @@
   \]
 </p>
 <p>This function was used to compute the vector field at each location in a grid. There is a masking element so that the function doesn't compute at or very near the origin.
-It was also used to compute in the two charge field, the charges are in superposition, and so the vector field is simply the sum of the two charge functions. </p>
+It was also used to compute in the two charge field, the charges are in superposition, and so the vector field is simply the sum of the two charge functions. By changing the permittivity constant
+epsilon, we can make the electric field weaker or stronger based off of what quantity it is.</p>
 </section>
   <section class="card">
 
@@ -48,14 +49,15 @@ It was also used to compute in the two charge field, the charges are in superpos
 <p>This function was used to compute the flux flowing through a gaussian sphere of radius r.</p>
     </section>
   <section class="card">
-<h3>Dirac delta</h3>
+<h3>Charged Ring</h3>
 <p>
   \[
-  \rho(\mathbf{r}) = q\,\delta^3(\mathbf{r}-\mathbf{r}')
+    \mathbf{E}(\mathbf{r}) = \frac{1}{4\pi\varepsilon_0} \frac{Qx}{(R^2+x^2)^{3/2}} \hat{\mathbf{r}}
   \]
 </p>
 
-<p>This function is purely cosmetic, graphically a dirac delta function would just be an infinitely tall and narrow spike, the code just represents a cluster of points. </p>
+<p>The charged ring function computes the charge of a vector field on the z-axis that emerges from a ring of charge. Rather than computing it as an integral of constant charge
+we instead create a number of point charges and sum them all up.</p>
 </section>
 </div>
 

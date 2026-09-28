@@ -21,7 +21,7 @@
     <option value="One_Charge">One-Charge Field</option>
     <option value="Two_Charge">Two-Charge Field</option>
     <option value="One_chargeGauss">Gaussian Sphere and Probe</option>
-    <option value="Charged_ring">Dirac Delta Cluster</option>
+    <option value="Charged_ring">Charged Ring</option>
     <option value="Vacuum_permittivity">Permittivity</option>
 </select>
 
@@ -87,6 +87,7 @@
     <label for="locationz1">Location of first charge(z):</label>
     <input type = "number" id = "locationz1" name = "locationz1" placeholder value = "50" required>
         </div>
+    <div class="field">
     <label for="locationx2">Location of second charge(x):</label>
     <input type = "number" id = "locationx2" name = "locationx2" placeholder value = "-50" required>
         </div>
@@ -98,9 +99,6 @@
     <label for="locationz2">Location of second charge(z):</label>
     <input type = "number" id = "locationz2" name = "locationz2" placeholder value = "-50" required>
         </div>
-
-
-
     <div class="field">
     <label for="xcoordinate2">X-Coordinate of Probe (Meters):</label>
     <input type="number" id="xcoordinate2" name="X-Coordinate" placeholder value="1" required>
@@ -113,8 +111,8 @@
     <label for="zcoordinate2">z-Coordinate of Probe (Meters):</label>
     <input type="number" id="zcoordinate2" name="z-Coordinate" placeholder value="0" required>
         </div>
-
 </div>
+
 
 
 <div id="inputs-three" style="display:none">
@@ -155,8 +153,8 @@
 
 <div id="inputs-four" style="display:none">
     <div class="field">
-    <label for="chargeD">Charge q (nanoCoulombs):</label>
-    <input type="number" id="chargeD" name="charge" placeholder value="10" required>
+    <label for="chargeD">Charge q (nanoCoulombs):<span id="charge-vald">10</span></label>
+     <input type = "range" id = "chargeD" name = "charge" min="-100" max="100" step="1" value="10">
         </div>
     <div class="field">
     <label for="locationxr">x-Coordinate of Probe (Meters):</label>
@@ -167,7 +165,7 @@
     <input type="number" id="locationyr" name="y-Coordinate" placeholder value="0" required>
     </div>
     <div class="field">
-    <label for="locationzr">x-Coordinate of Probe (Meters):</label>
+    <label for="locationzr">z-Coordinate of Probe (Meters):</label>
     <input type="number" id="locationzr" name="z-Coordinate" placeholder value="0" required>
     </div>
 </div>
@@ -205,7 +203,8 @@
     <label for="zcoordinate1p">z-Coordinate of Probe (Meters):</label>
     <input type="number" id="zcoordinate1p" name="z-Coordinate" placeholder value="0" required>
     <div class="field">
-    <label for="permittivity">Choose Permittivity:</label>
+
+        <label for="permittivity">Choose Permittivity:</label>
     <select name="permittivity" id="permittivity">
         <option value="1.0">Free Space</option>
         <option value="1.0006">Air</option>
